@@ -16,6 +16,7 @@ class Controller
 
   private static array $configuration = [];
 
+  private Database $database;
   private array $request;
   private View $view;
 
@@ -31,7 +32,7 @@ class Controller
       throw new ConfigurationException('Configuration error');
     }
 
-    $db = new Database(self::$configuration['db']);
+    $this->database = new Database(self::$configuration['db']);
     
     $this->request = $request;
     $this->view = new View();
@@ -46,18 +47,18 @@ class Controller
     switch ($this->action()) {
       case 'create':
         $page = 'create';
-        $created = false;
 
         $data = $this->getRequestPost();
         if (!empty($data)) {
           $created = true;
-          $viewParams = [
+          $noteData = [
             'title' => $data['title'],
-            'description' => $data['description']
+            'description' => $data['description'],
           ];
+          $this->database->createNote($noteData);
+          header('Location: /?before=created');
         }
 
-        $viewParams['created'] = $created;
         break;
       case 'show':
         $viewParams = [
@@ -67,7 +68,10 @@ class Controller
         break;
       default:
         $page = 'list';
-        $viewParams['resultList'] = "wyświetlamy notatki";
+        
+        $data = $this->getRequestGet();
+      
+        $viewParams['before'] = $data['before'] ?? null;
         break;
     }
 

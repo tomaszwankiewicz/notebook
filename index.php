@@ -30,12 +30,12 @@ Controller::initConfiguration($configuration);
   //mail('xxx@xxx.com', 'Error', $e->getMessage());
   echo '<h1>Wystąpił błąd w aplikacji - ConfigurationExcection</h1>';
   echo 'Problem z aplikacją, proszę spróbować za chwilę.';
-  //echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
+  echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
   //echo '<h3>' . $e->getTraceAsString() . '</h3>';
 
 } catch (AppException $e) {
   echo '<h1>Wystąpił błąd w aplikacji - AppExcection</h1>';
-  //echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
+  echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
   //echo '<h3>' . $e->getTraceAsString() . '</h3>';
 
 } catch (Throwable $e) {
