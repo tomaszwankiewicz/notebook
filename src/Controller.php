@@ -34,15 +34,13 @@ class Controller
 
     $this->database = new Database(self::$configuration['db']);
     
-    $this->request = $request;
-    $this->view = new View();
-
-    //dump(self::$configuration);
+    $this->request = $request;//przypisuję zmieną otrzymaną z kontruktora do zmiennej $request 
+    $this->view = new View(); //tworzę nowy obiekt klasy View i przypisuję go do zmiennej $view
   }
 
   public function run(): void
   {
-    $viewParams = [];
+    $viewParams = []; //tworzę zmienną lokalną (tablicę)
 
     switch ($this->action()) {
       case 'create':
@@ -68,20 +66,22 @@ class Controller
         break;
       default:
         $page = 'list';
-        
         $data = $this->getRequestGet();
       
-        $viewParams['before'] = $data['before'] ?? null;
+        $viewParams = [
+          'notes' => $this->database->getNotes(),
+          'before' => $data['before'] ?? null
+        ];
         break;
     }
 
-    $this->view->render($page, $viewParams);
+    $this->view->render($page, $viewParams ?? []); //Jeśli nie ma zmiennej $viewParams to przekazujemy pustą tablicę
   }
 
   private function action(): string
   {
-    $data = $this->getRequestGet();
-    return $data['action'] ?? self::DEFAULT_ACTION;
+    $data = $this->getRequestGet(); //przypisuję do zmiennej lokalne $data dane pobrane z metody getRequestGet
+    return $data['action'] ?? self::DEFAULT_ACTION; //Jeśli otrzymam z 
   }
 
   private function getRequestGet(): array

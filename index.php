@@ -10,12 +10,13 @@ use Throwable;
 
 require_once("src/Utils/debug.php");
 require_once("src/Controller.php");
+require_once("src/Exception/AppException.php");
 
-$configuration = require_once("config/config.php");
+$configuration = require_once("config/config.php"); //przypisuję do zmiennej $configuration tablicę z pliku config.php
 
-$request = [
-  'get' => $_GET, 
-  'post' => $_POST
+$request = [            //tworzę tablicę asocjacyjną $request
+  'get' => $_GET,       //przypisuję do klucza 'get' wartość 
+  'post' => $_POST      //
 ];
 
 try {
