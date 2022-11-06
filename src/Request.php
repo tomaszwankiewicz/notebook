@@ -21,7 +21,7 @@ class Request
     }
 
     //metoda która zwraca dane z geta
-    public function getParam(string $name, $default = null) //jeśli wartość $name jest niepodana, podaje wartość domyślną null
+    public function getParam(string $name, $default = null) //jeśli wartość $name jest nie podana, podaje wartość domyślną null
     {
         return $this->get[$name] ?? $default;
     }

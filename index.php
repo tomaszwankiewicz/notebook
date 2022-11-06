@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App;
+spl_autoload_register(function(string $classNamespace)
+{
+  $path = str_replace(['\\', 'App/'],['/',''], $classNamespace); //znak specjalny \(backslash) musimy poprzedzic eskejowaniem czyli dodac kolejny backslash
+  $path ="src/$path.php";
+  require_once($path);
+});
 
 require_once("src/Utils/debug.php");
-require_once("src/Controller.php");
-require_once("src/Request.php");
-require_once("src/Exception/AppException.php");
-//require_once("src/Exception/NotFoundException.php");
+$configuration = require_once("config/config.php"); //przypisuję do zmiennej $configuration tablicę z pliku config.php
 
+//namespace App; - nie potrzebujemy namespace tutaj
+
+use App\Controller\AbstractController;
+use App\Controller\NoteController;
 use App\Request;
 use App\Exception\AppException;
 use App\Exception\ConfigurationException;
-use Throwable;
-
-
-
-$configuration = require_once("config/config.php"); //przypisuję do zmiennej $configuration tablicę z pliku config.php
 
 $request = new Request($_GET, $_POST); //tworzę nowy obiekt klasy Request
 
@@ -27,8 +28,8 @@ try {
 //$controller = new Controller($request);
 //$controller->run();
 
-Controller::initConfiguration($configuration); //przekazuję do Controllera tablicę z plikami konfiguracyjnymi bazy danych
-(new Controller($request))->run(); //tworze nowy obiekt klasy Controller, przekazuję do konstuktora tablicę $request i wywołuję metodą run()
+AbstractController::initConfiguration($configuration); //przekazuję do AbstractControllera tablicę z plikami konfiguracyjnymi bazy danych |wywowuje metode statyczna (powiazana z klasa a nie obiektem)
+(new NoteController($request))->run(); //tworze nowy obiekt klasy NoteController, przekazuję do konstuktora(ktory jest w AbstractController) tablicę $request i wywołuję metodą run()
 
 
 //Pzechwytuwanie wyjątków
@@ -44,9 +45,10 @@ Controller::initConfiguration($configuration); //przekazuję do Controllera tabl
   echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
   //echo '<h3>' . $e->getTraceAsString() . '</h3>';
 
-} catch (Throwable $e) {
+} catch (\Throwable $e) {                //throwable pochodzi z globalnego namespace
   echo '<h1>Wystąpił błąd w aplikacji - Throwable</h1>';
-  //echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
+  echo '<h3>' .  $e->getMessage() . "|  " .$e->getFile() . " " . $e->getLine() .'</h3>';
   //echo '<h3>' . $e->getTraceAsString() . '</h3>';
+  //dump( '<h3>' . $e->getTraceAsString() . '</h3>');
 }
 
