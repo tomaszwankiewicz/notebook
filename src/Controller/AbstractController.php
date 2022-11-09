@@ -37,7 +37,7 @@ abstract class AbstractController  //tutatj mamy obsługę kontolerów i żąda�
       $this->view = new View(); //tworzę nowy obiekt klasy View i przypisuję go do zmiennej $view
     }
 
-    public function run(): void
+    final public function run(): void
     {
   
       $action = $this->action() . 'Action';         //php jako zmienną $action zapisuje otrzymaną z żądania akcje(typ string create/show/list) i dodaje końcówkę 'Action'
@@ -64,7 +64,7 @@ abstract class AbstractController  //tutatj mamy obsługę kontolerów i żąda�
       //     break;
     }
   
-    protected function redirect(string $to, array $params): void
+    final protected function redirect(string $to, array $params): void
     {
       $location = $to;
 

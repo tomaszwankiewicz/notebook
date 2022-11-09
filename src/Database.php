@@ -46,10 +46,31 @@ class Database
     }
 
 
-    public function getNotes(): array
+    public function getNotes(int $pageNumber, int $pageSize, string $sortBy, string $sortOrder): array
     {
-        try{
-            $query = "SELECT id, title, created FROM notes";
+        try{                            //walidacja
+            $limit = $pageSize;
+            $offset = ($pageNumber - 1) * $pageSize;
+
+            if(!in_array($sortBy, ['created', 'title'])) {                //sprawdza czy przeslana wartosc ($sortBy) nie znajduje sie w tablicy czyli nie jest created ani title
+                $sortBy  = 'title';                                      //to ustawiam domslnie na 'title'
+            }
+
+            if(!in_array($sortOrder, ['asc', 'desc'])) {                //sprawdza czy przeslana wartosc ($sortOrder) nie znajduje sie w tablicy czyli nie jest asc ani desc
+                $sortOrder  = 'desc';                                      //to ustawiam domslnie na 'desc'
+            }
+            
+            $query = "
+            SELECT id, title, created 
+            FROM notes
+            ORDER BY $sortBy $sortOrder
+            LIMIT $offset, $limit    
+            ";  //paginacje obsługuje LIMIT
+
+            
+            dump($offset);
+            dump($limit);
+
             $result = $this->conn->query($query); 
             return $result->fetchAll(PDO::FETCH_ASSOC); //Dane zostaną zwrócone w postaci tablicy asocjacyjnej
     
@@ -77,6 +98,37 @@ class Database
         throw new StorageException('Nie udało się utworzyć nowej otatki', 400, $e);
        }
     }
+
+    public function editNote(int $id, array $data): void
+    {
+        try{
+            $title = $this->conn->quote($data['title']);
+            $description = $this->conn->quote($data['description']);
+
+            $query = "
+                UPDATE notes
+                SET title = $title, description = $description
+                WHERE id = $id
+            ";
+
+            $this->conn->exec($query);
+        } catch (Throwable $e) {
+            throw new StorageException('Nie udało się zaktualizować notatki', 400, $e);
+        }
+
+    }
+
+    public function deleteNote(int $id): void
+    {
+        try {
+            $query = "DELETE FROM notes WHERE id = $id LIMIT 1";
+            $this->conn->exec($query);
+        } catch (Throwable $e) {
+            throw new StorageException ('Nie udało się usunąć notatki', 400, $e);
+        }
+
+    }
+
 
     private function createConnection(array $config): void
     {

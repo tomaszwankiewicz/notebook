@@ -20,7 +20,7 @@ use App\Request;
 use App\Exception\AppException;
 use App\Exception\ConfigurationException;
 
-$request = new Request($_GET, $_POST); //tworzę nowy obiekt klasy Request
+$request = new Request($_GET, $_POST, $_SERVER); //tworzę nowy obiekt klasy Request
 
 
 try {

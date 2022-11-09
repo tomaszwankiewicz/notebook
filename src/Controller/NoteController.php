@@ -8,7 +8,9 @@ use App\Exception\NotFoundException;
 
 class NoteController extends AbstractController   //tutaj mamy obsłgę akcji
 {
-  public function createAction()
+  private const PAGE_SIZE = 10;
+
+  public function createAction(): void
   {
     if ($this->request->hasPost()) {
       $noteData = [
@@ -22,10 +24,76 @@ class NoteController extends AbstractController   //tutaj mamy obsłgę akcji
     $this->view->render('create');    //Jeśli nie ma zmiennej $params(po przecinku) to przekazujemy pustą tablicę
   }
 
-  public function showAction()
+  public function showAction(): void
   {
-    $noteId = (int) $this->request->getParam('id'); 
+    $this->view->render(
+      'show',
+      ['note' => $this->getNote()]
+    ); 
+  }
 
+  public function listAction(): void
+  {
+    $pageNumber = (int) $this->request->getParam('page', 1); //domyslenie bedziemy na stronie pierwszej
+    $pageSize = (int) $this->request->getParam('pagesize', self::PAGE_SIZE);
+    $sortBy = $this->request->getParam('sortby', 'title'); //wartosc domyslna 'title'
+    $sortOrder = $this->request->getParam('sortorder', 'desc');
+
+    if(!in_array($pageSize, [1, 5, 10, 25])) {
+      $pageSize = self::PAGE_SIZE;
+    }
+
+    $note = $this->database->getNotes($pageNumber, $pageSize, $sortBy, $sortOrder);
+
+
+    $this->view->render(
+      'list', 
+      [
+        'page' => ['number' => $pageNumber, 'size => $pageSize'],
+        'sort' => ['by' => $sortBy, 'order' => $sortOrder],
+        'notes' => $note,
+        'before' => $this->request->getParam('before'),
+        'error' => $this->request->getParam('error'),
+      ]
+    ); 
+  }
+
+  public function editAction(): void
+  {
+    if ($this->request->isPost()) {
+      $noteId = (int) $this->request->postParam('id');
+      $noteData = [
+        'title' => $this->request->postParam('title'),
+        'description' => $this->request->postParam('description'),
+      ];
+      $this->database->editNote($noteId, $noteData);
+      $this->redirect('/', ['before' => 'edited']);
+    }
+
+    $this->view->render(
+      'edit',
+      ['note' => $this->getNote()]
+    );   
+  }
+
+  public function deleteAction(): void
+  {
+    if($this->request->isPost()) {
+      $id = (int) $this->request->postParam('id');
+      $this->database->deleteNote($id);
+      $this->redirect('/', ['before' => 'deleted']);
+    }
+    
+    
+    $this->view->render(
+      'delete',
+      ['note' => $this->getNote()]
+    );   
+  }
+
+  private function getNote(): array
+  {
+    $noteId = (int) $this->request->getParam('id');
     if (!$noteId) {
       $this->redirect('/', ['error' => 'missingNoteId']);
     }
@@ -35,52 +103,6 @@ class NoteController extends AbstractController   //tutaj mamy obsłgę akcji
     } catch (NotFoundException $e){
       $this->redirect('/', ['error' => 'noteNotFound']);
     }
-
-    $this->view->render(
-      'show',
-      ['note' => $note]
-    ); 
+    return $note;
   }
-
-  public function listAction()
-  {
-    $this->view->render(
-      'list', 
-      [
-        'notes' => $this->database->getNotes(),
-        'before' => $this->request->getParam('before'),
-        'error' => $this->request->getParam('error'),
-      ]
-    ); 
-  }
-
-  public function editAction()
-  {
-    $noteId = (int) $this->request->getParam('id');
-    if (!$noteId) {
-      $this->redirect('/', ['error' => 'missingNoteId']);
-    }
-
-    $this->view->render(
-      'edit'
-    );   
-  }
-
-private function redirect(string $to, array $params): void
-{
-  $location = $to;
-
-  if (count($params)) {
-    $queryParams = [];
-    foreach ($params as $key => $value) {
-      $queryParams[] = urlencode($key) . '=' . urlencode($value);
-    } 
-    $queryParams = implode('&', $queryParams);     //metoda która łączy wszystkie parametry w tablic
-    $location .= '?' . $queryParams;
-  }
-  
-  header("Location: $location");
-  exit;
-}
-
 }
