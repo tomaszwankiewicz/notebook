@@ -32,22 +32,27 @@
       ?>
     </div>
 
-      <?php
-        $sort = $params['sort'] ?? [];
-        $by = $sort['by'] ?? 'title';
-        $order = $sort['order'] ?? 'desc';
+    <?php
 
-        $page = $params['page'] ?? [];
-        $size = $page['size'] ?? 10;
-        $number = $page['number'] ?? 1;
+    $sort = $params['sort'] ?? [];
+    $by = $sort['by'] ?? 'title';
+    $order = $sort['order'] ?? 'desc';
 
-        dump($size);
-      ?>
+    $page = $params['page'] ?? [];
+    $size = $page['size'] ?? 10;
+    $currentPage = $page['number'] ?? 1;
+    $pages = $page['pages'] ?? 1;
+
+    $phrase = $params['phrase'] ?? null;
+    ?>
 
     <div>
-      <form class="setting-form" acation="/" method="GET">
+      <form class="settings-form" action="/" method="GET">
         <div>
-          <div>Sortuj po</div>
+          <label>Wyszukaj: <input type="text" name="phrase" value="<?php echo $phrase ?>" /></label>
+        </div>
+        <div>
+          <div>Sortuj po:</div>
           <label>Tytule: <input name="sortby" type="radio" value="title" <?php echo $by === 'title' ? 'checked' : '' ?> /></label>
           <label>Dacie: <input name="sortby" type="radio" value="created" <?php echo $by === 'created' ? 'checked' : '' ?> /></label>
         </div>
@@ -100,5 +105,31 @@
         </tbody>
       </table>
     </div>
+
+    <?php
+    $paginationUrl = "&phrase=$phrase&pagesize=$size?sortby=$by&sortorder=$order";
+    ?>
+    <ul class="pagination">
+      <?php if ($currentPage !== 1) : ?>
+        <li>
+          <a href="/?page=<?php echo $currentPage - 1 . $paginationUrl ?>">
+            <button> Prev </button>
+          </a>
+        </li>
+      <?php endif; ?>
+      <?php for ($i = 1; $i <= $pages; $i++) : ?> <li>
+          <a href="/?page=<?php echo $i . $paginationUrl ?>">
+            <button><?php echo $i ?></button>
+          </a>
+        </li>
+      <?php endfor; ?>
+      <?php if ($currentPage < $pages) : ?>
+        <li>
+          <a href="/?page=<?php echo $currentPage + 1 . $paginationUrl ?>">
+            <button> Next </button>
+          </a>
+        </li>
+      <?php endif; ?>
+    </ul>
   </section>
 </div>

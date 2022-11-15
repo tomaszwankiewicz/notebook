@@ -342,6 +342,11 @@ form.note-form textarea {
   list-style: none;
 }
 
+.delete ul li,
+.show ul li {
+  margin-top: 10px;
+}
+
 .delete button,
 .show button {
   padding: 8px 12px;

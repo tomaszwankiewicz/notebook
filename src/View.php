@@ -6,7 +6,7 @@ namespace App;
 
 class View
 {
-  public function render(string $page, array $params = []): void    //$params = [] - domyslna wartosc to pusta talica
+  public function render(string $page, array $params = []): void
   {
     $params = $this->escape($params);
     require_once("templates/layout.php");
@@ -15,24 +15,23 @@ class View
   private function escape(array $params): array
   {
     $clearParams = [];
-
-    foreach ($params as $key => $param) {   //$key-nazwa parametru, $param -wartość parametru
-
+    foreach ($params as $key => $param) {
       switch (true) {
-        case is_array($param):      //jeśli to co znajduje sie pod kluczem $key(czyli $param) jest tablicą 
-          $clearParams[$key] = $this->escape($param); //to wywołaj ponownie escape ale przekaż mu tą tablicę //wywołanie rekurencjne czyli wywołanie metody w tej samej metodzie
+        case is_array($param):
+          $clearParams[$key] = $this->escape($param);
           break;
         case is_int($param):
           $clearParams[$key] = $param;
           break;
         case $param:
-          $clearParams[$key] = htmlentities(/*(string)*/ $param); //zapisujemy pod tym samym kluczem
+          $clearParams[$key] = htmlentities($param);
           break;
-        default: 
-          $clearParams[$key] = $param; //jak bedzie null
+        default:
+          $clearParams[$key] = $param;
           break;
       }
     }
+
     return $clearParams;
   }
 }

@@ -1,10 +1,10 @@
 <div>
   <h3>Edycja notatki</h3>
   <div>
-    <?php if(!empty($params['note'])): ?>
-    <?php $note = $params['note']; ?>
+    <?php if (!empty($params['note'])) : ?>
+      <?php $note = $params['note']; ?>
       <form class="note-form" action="/?action=edit" method="post">
-        <input name="id" type="hidden" value="<?php echo $note['id'] ?>"/>
+        <input name="id" type="hidden" value="<?php echo $note['id'] ?>" />
         <ul>
           <li>
             <label>Tytuł <span class="required">*</span></label>
@@ -19,11 +19,11 @@
           </li>
         </ul>
       </form>
-      <?php else: ?>
-        <div>
-            Brak danych do wyświetlenia
-            <a href="/"><button>Powrót do listy notatek</button></a>
-        </div>
-      <?php endif; ?>
+    <?php else : ?>
+      <div>
+        Brak danych do wyświetlenia
+        <a href="/"><button>Powrót do listy notatek</button></a>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
