@@ -9,7 +9,7 @@ spl_autoload_register(function (string $classNamespace) {
 });
 
 require_once("src/Utils/debug.php");
-$configuration = require_once("config/config.php"); //przypisuję do zmiennej $configuration tablicę z pliku config.php
+$configuration = require_once("config/config.php"); //przypisuję do zmiennej $configuration tablicę z pliku config.php(plik zwraca tablicę)
 
 use App\Controller\AbstractController;
 use App\Controller\NoteController;
@@ -18,11 +18,14 @@ use App\Exception\AppException;
 use App\Exception\ConfigurationException;
 
 $request = new Request($_GET, $_POST, $_SERVER); //tworze nowy obiekt klasy request i przypisuje go do zmiennej $request. 
-//Przekazuje dane do konstruktora z żądania GET, POST i SERVER(tablice)
+//Pobiera i przekazuje dane do konstruktora z żądania GET, POST i SERVER(tablice)
 
 try {
-  AbstractController::initConfiguration($configuration); //wywoluje metodę initConfiguration ( z klasy AbstractController) i przekazuję tablicę z danymi konfiguracyjnymi bazy danych |wywowuje metode statyczna (powiazana z klasa a nie obiektem)
-  (new NoteController($request))->run(); //tworze nowy obiekt klasy NoteController, przekazuję do konstuktora tablicę $request (konstruktor jest w AbstractController bo to rodzic NoteController) i wywołuję metodę run(). Metoda run jest dziedziczona z AbstractController
+  AbstractController::initConfiguration($configuration); //wywoluje metodę initConfiguration (z klasy AbstractController) 
+  //i przekazuję zmienną(w tym pzypadku tablica) z danymi konfiguracyjnymi bazy danych |wywowuje metode statyczną '::'
+  (new NoteController($request))->run(); //tworze nowy obiekt klasy NoteController, 
+  //przekazuję do konstuktora obiekt $request (konstruktor jest w AbstractController bo to rodzic NoteController) 
+  //i wywołuję metodę run(). Metoda run jest dziedziczona z AbstractController
 
 //Przechwytywanie wyjątków
 } catch (ConfigurationException $e) {

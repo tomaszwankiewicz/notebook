@@ -29,7 +29,7 @@ abstract class AbstractModel
     $this->conn = new PDO(
       $dsn,   //sprawdza watości przypisane do kluczy('databse' i 'host')
       $config['user'], //sprawdza watości przypisane do klucza 'user'
-      $config['password'],//sprawdza watości przypisane do klucza 'password'
+      $config['password'],//sprawdza wartości przypisane do klucza 'password'
       [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION //wyrzuca błąd jeśli nie udało się połączyć
       ]

@@ -11,6 +11,8 @@ class View
     $params = $this->escape($params);
     require_once("templates/layout.php");
   }
+//otrzymanie z metody showAction() z NoteController stringa 'show' i tablicy 'note'
+
 
   private function escape(array $params): array
   {
